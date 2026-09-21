@@ -65,6 +65,16 @@
             <!-- Messages -->
         </div>
 
+        <!-- Voice Preview Area (Initially Hidden) -->
+        <div id="audioPreviewArea" class="audio-preview-area hidden">
+            <span>Voice recorded! 🎤</span>
+            <audio id="audioPreview" controls class="chat-audio"></audio>
+            <div>
+                <button id="sendAudioBtn" class="glass-btn neon-btn-small">Send Voice</button>
+                <button id="cancelAudioBtn" class="glass-btn icon-btn">❌</button>
+            </div>
+        </div>
+
         <div class="inputArea">
             <input
                 id="messageInput"
@@ -73,6 +83,8 @@
                 autocomplete="off"
                 class="glass-input neon-focus"
             >
+            <!-- ✨ Voice Record Button Added -->
+            <button id="record-btn" class="glass-btn icon-btn" title="Record Voice">🎤</button>
             <button id="sendBtn" class="glass-btn neon-btn-small">
                 Send
             </button>
