@@ -297,6 +297,41 @@ body {
     font-style: italic;
 }
 
+/* Audio Preview Area */
+.audio-preview-area {
+    padding: 15px 20px;
+    background: rgba(0, 0, 0, 0.6);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+.audio-preview-area span {
+    font-size: 13px;
+    color: #ff007c;
+    font-weight: 600;
+}
+
+.chat-audio {
+    width: 100%;
+    max-height: 40px;
+    outline: none;
+}
+
+/* Recording Active Blink */
+.recording-blink {
+    background: rgba(255, 0, 124, 0.4) !important;
+    border-color: #ff007c !important;
+    animation: neon-blink 1s infinite alternate;
+}
+
+@keyframes neon-blink {
+    0% { box-shadow: 0 0 5px #ff007c; }
+    100% { box-shadow: 0 0 20px #ff007c, inset 0 0 10px #ff007c; }
+}
+
 /* Input Area */
 .inputArea {
     display: flex;
@@ -304,6 +339,7 @@ body {
     gap: 12px;
     border-top: 1px solid rgba(255, 255, 255, 0.06);
     background: rgba(0, 0, 0, 0.4);
+    align-items: center;
 }
 
 .inputArea input {
@@ -316,7 +352,7 @@ body {
     border: none;
     color: white;
     border-radius: 15px;
-    padding: 0 25px;
+    padding: 10px 20px;
     font-weight: 600;
     cursor: pointer;
     box-shadow: 0 0 15px rgba(255, 0, 124, 0.25);
