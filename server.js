@@ -9,12 +9,12 @@ const io = new Server(server);
 
 app.use(express.static(path.join(__dirname, "public")));
 
-// UptimeRobot Ping Route (To keep the server awake)
+// UptimeRobot Ping Route
 app.get('/ping', (req, res) => {
     res.status(200).send("Server is alive 🤍");
 });
 
-// RAM Storage (No Database)
+// RAM Storage
 const messages = new Map();
 
 function isValidCode(code) {
@@ -36,13 +36,14 @@ io.on("connection", (socket) => {
         socket.emit("previousMessages", savedMessages);
     });
 
-    socket.on("sendMessage", ({ code, text }) => {
+    socket.on("sendMessage", ({ code, text, audio }) => {
         if (!isValidCode(code)) return;
-        if (!text || !text.trim()) return;
+        if ((!text || !text.trim()) && !audio) return;
 
         const message = {
             id: Date.now().toString(),
-            text: text.trim(),
+            text: text ? text.trim() : "",
+            audio: audio || null,
             createdAt: Date.now()
         };
 
@@ -51,7 +52,6 @@ io.on("connection", (socket) => {
         }
 
         messages.get(code).push(message);
-
         io.to(code).emit("newMessage", message);
     });
 
@@ -82,7 +82,6 @@ io.on("connection", (socket) => {
 
 });
 
-// Render Port Setup
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT} (RAM Storage Mode)`);
