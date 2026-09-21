@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A🤍S 4Ever</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Premium Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Neon Glow Orbs for Premium Liquid Effect -->
+    <div class="neon-orbs">
+        <div class="orb orb-pink"></div>
+        <div class="orb orb-purple"></div>
+        <div class="orb orb-cyan"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container" id="mainContainer">
+        
+        <!-- Login Card -->
+        <div class="card glass-panel">
+            
+            <!-- New Blinking Title -->
+            <h1 class="neon-text">A<span class="heart-blink">🤍</span>S 4Ever</h1>
+            
+            <!-- Tagline -->
+            <p class="tagline">Just you, me & our messages. 💕</p>
+            
+            <p id="status" class="sub-text">Enter your 4-digit secret code</p>
+
+            <div id="codeArea">
+                <input
+                    type="text"
+                    id="codeInput"
+                    placeholder="4-digit code"
+                    maxlength="4"
+                    inputmode="numeric"
+                    autocomplete="off"
+                    class="glass-input neon-focus"
+                >
+                <button id="enterBtn" class="glass-btn neon-btn">
+                    Enter Chat <span>➔</span>
+                </button>
+            </div>
+            
+            <p id="error" class="error"></p>
+        </div>
+
+    </div>
+
+    <!-- Chat Screen -->
+    <div id="chat" class="chat hidden glass-panel">
+        
+        <div class="chatHeader">
+            <span class="chat-title neon-text-small">A🤍S 4Ever</span>
+            <button id="backBtn" class="glass-btn icon-btn">
+                ×
+            </button>
+        </div>
+
+        <div id="messages" class="messages">
+            <!-- Messages -->
+        </div>
+
+        <div class="inputArea">
+            <input
+                id="messageInput"
+                type="text"
+                placeholder="Type your secret..."
+                autocomplete="off"
+                class="glass-input neon-focus"
+            >
+            <button id="sendBtn" class="glass-btn neon-btn-small">
+                Send
+            </button>
+        </div>
+
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="app.js"></script>
+
+</body>
+</html>
