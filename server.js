@@ -1,32 +1,21 @@
 const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
-const mongoose = require("mongoose");
+const path = require("path");
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, "public")));
 
-// ✨ MongoDB Atlas Connection with Password added! (Note the %40 instead of @)
-const mongoURI = "mongodb+srv://ajhacker:ajhacker%402006@adsparkdb.ug1d1z2.mongodb.net/secretchat?appName=AdSparkDB";
-
-mongoose.connect(mongoURI)
-.then(() => {
-    console.log("✅ MongoDB Atlas Connected successfully");
-}).catch((err) => {
-    console.error("❌ MongoDB Connection Error:", err);
+// UptimeRobot Ping Route (To keep the server awake)
+app.get('/ping', (req, res) => {
+    res.status(200).send("Server is alive 🤍");
 });
 
-// ✨ MongoDB Schema for Messages
-const messageSchema = new mongoose.Schema({
-    code: { type: String, required: true },
-    text: { type: String, required: true },
-    createdAt: { type: Date, default: Date.now }
-});
-
-const Message = mongoose.model("Message", messageSchema);
+// RAM Storage (No Database)
+const messages = new Map();
 
 function isValidCode(code) {
     return /^\d{4}$/.test(code);
@@ -34,7 +23,7 @@ function isValidCode(code) {
 
 io.on("connection", (socket) => {
 
-    socket.on("joinCode", async (code) => {
+    socket.on("joinCode", (code) => {
         if (!isValidCode(code)) {
             socket.emit("codeError", "Please enter a valid 4-digit code");
             return;
@@ -43,57 +32,46 @@ io.on("connection", (socket) => {
         socket.join(code);
         socket.code = code;
 
-        try {
-            // ✨ Fetch messages from MongoDB
-            const savedMessages = await Message.find({ code }).sort({ createdAt: 1 });
-            
-            // Format to match frontend
-            const formattedMessages = savedMessages.map(msg => ({
-                id: msg._id.toString(),
-                text: msg.text,
-                createdAt: msg.createdAt
-            }));
-
-            socket.emit("previousMessages", formattedMessages);
-        } catch (error) {
-            console.error("Error fetching messages:", error);
-        }
+        const savedMessages = messages.get(code) || [];
+        socket.emit("previousMessages", savedMessages);
     });
 
-    socket.on("sendMessage", async ({ code, text }) => {
+    socket.on("sendMessage", ({ code, text }) => {
         if (!isValidCode(code)) return;
         if (!text || !text.trim()) return;
 
-        try {
-            // ✨ Save new message to MongoDB
-            const newMsg = await Message.create({
-                code: code,
-                text: text.trim()
-            });
+        const message = {
+            id: Date.now().toString(),
+            text: text.trim(),
+            createdAt: Date.now()
+        };
 
-            const message = {
-                id: newMsg._id.toString(),
-                text: newMsg.text,
-                createdAt: newMsg.createdAt
-            };
-
-            io.to(code).emit("newMessage", message);
-        } catch (error) {
-            console.error("Error saving message:", error);
+        if (!messages.has(code)) {
+            messages.set(code, []);
         }
+
+        messages.get(code).push(message);
+
+        io.to(code).emit("newMessage", message);
     });
 
-    socket.on("messageSeen", async ({ code, messageId }) => {
+    socket.on("messageSeen", ({ code, messageId }) => {
         if (!isValidCode(code)) return;
 
-        try {
-            // ✨ Delete seen message from MongoDB
-            await Message.findByIdAndDelete(messageId);
-            
-            io.to(code).emit("messageDeleted", messageId);
-        } catch (error) {
-            console.error("Error deleting message:", error);
+        const codeMessages = messages.get(code);
+        if (!codeMessages) return;
+
+        const updatedMessages = codeMessages.filter(
+            message => message.id !== messageId
+        );
+
+        if (updatedMessages.length === 0) {
+            messages.delete(code);
+        } else {
+            messages.set(code, updatedMessages);
         }
+
+        io.to(code).emit("messageDeleted", messageId);
     });
 
     socket.on("disconnect", () => {
@@ -104,8 +82,8 @@ io.on("connection", (socket) => {
 
 });
 
-// ✨ Updated for Render Hosting
+// Render Port Setup
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`🚀 Server running on port ${PORT} (RAM Storage Mode)`);
 });
