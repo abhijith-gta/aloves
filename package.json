@@ -1,0 +1,14 @@
+{
+  "name": "secret-message",
+  "version": "1.0.0",
+  "description": "Private disappearing message website",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "mongoose": "^9.10.1",
+    "socket.io": "^4.8.1"
+  }
+}
